@@ -1,5 +1,5 @@
 # Monitoring-Stack
-# Basic Architecture 
+Basic Architecture\ 
 Step 1: Ready the data container generating the logs and build the image
 - Add all the files from the log_generating_container to the same directory 
 - Add an empty folder called "logg" 
