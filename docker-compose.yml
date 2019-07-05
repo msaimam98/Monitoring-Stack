@@ -1,0 +1,34 @@
+version: '2.1'
+services:
+  fluentd_instance:
+    build:
+      context: ./info_cont
+      dockerfile: ./Dockerfile
+    image: custom-fluentd
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    volumes:
+      - "./info_cont:/custom-config"
+    command: ["-c", "/custom-config/in_docker.conf"]
+  elasticseacrh-instance:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
+    environment:
+      - "discovery.type=single-node"
+    ports:
+      - 9200:9200
+  application-instance:
+      image: alpine
+      depends_on:
+        - fluentd_instance
+      command: ["echo", "Hello World"]
+      logging:
+        driver: fluentd
+        options:
+          tag: "docker.{{.ID}}"
+          fluentd-address: "fluentd_instance"
+#  application-instance:
+#      build: ./log_generating_container
+#      image: log_generating_container
+#      depends_on:
+#        - fluentd_instance

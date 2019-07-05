@@ -1,4 +1,21 @@
 # Monitoring-Stack
+
+## Using docker-compose
+```bash
+# Clone and navigate into the directory
+# run via docker-compose
+docker-compose up --build
+
+# Re-run logging application
+docker-compose start application-instance
+
+# Logs are posted on elasticsearch with some interval at: http://localhost:9200/fluentd*/_search?pretty
+
+# stop all services by 
+docker-compose down
+```
+
+## Explanation
 Basic Architecture\
 Step 1: Ready the data container generating the logs and build the image
 - Add all the files from the log_generating_container to the same directory 
@@ -22,4 +39,4 @@ Step 3: Initialise the Fluentd container
 
 Step 4: Initialise the log generating container 
 - Use the following command to initialise the container\
-docker run --log-driver=fluentd --log-opt tag="docker.{{.ID}}" --log-opt fluentd-address=[HOST_IP_ADDRESS]:24224 loggeneration
+docker run --log-driver=fluentd --log-opt tag="docker.{{.ID}}" --log-opt fluentd-address=[HOST_IP_ADDRESS]:24224 loggeneration 
