@@ -1,5 +1,12 @@
 version: '2.1'
 services:
+    fluentbit-instance:
+    image: fluent/fluent-bit:1.0
+    ports:
+      - "24223:24223"
+    volumes:
+      - "./info_bit:/custom_conf"
+    command: ["/fluent-bit/bin/fluent-bit", "-c", "/custom_conf/in_fluentbit.conf"]
   fluentd_instance:
     build:
       context: ./info_cont
@@ -20,13 +27,13 @@ services:
   application-instance:
       image: alpine
       depends_on:
-        - fluentd_instance
+        - fluentbit-instance
       command: ["echo", "Hello World"]
       logging:
         driver: fluentd
         options:
           tag: "docker.{{.ID}}"
-          fluentd-address: "fluentd_instance"
+          fluentd-address: fluentbit-instance
 #  application-instance:
 #      build: ./log_generating_container
 #      image: log_generating_container
