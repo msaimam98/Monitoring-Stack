@@ -24,6 +24,12 @@ services:
       - "discovery.type=single-node"
     ports:
       - 9200:9200
+  kibana-instance:
+    image: kibana:7.2.0
+    ports:
+      - "5601:5601"
+    links:
+      - elasticseacrh-instance
 #   application-instance:
 #       image: alpine
 #       depends_on:
