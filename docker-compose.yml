@@ -1,12 +1,11 @@
 version: '2.1'
 services:
-  fluentbit_instance:
-    image: fluent/fluent-bit:1.0
-    #ports:
-    #  - "24223:24223"
-    volumes:
-      - "./info_bit:/custom_conf"
-    command: ["/fluent-bit/bin/fluent-bit", "-c", "/custom_conf/in_fluentbit.conf"]
+  elasticseacrh-instance:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    environment:
+      - "discovery.type=single-node"
+    ports:
+      - 9200:9200
   fluentd_instance:
     build:
       context: ./info_cont
@@ -18,28 +17,29 @@ services:
     volumes:
       - "./info_cont:/custom-config"
     command: ["-c", "/custom-config/in_docker.conf"]
-  elasticseacrh-instance:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
-    environment:
-      - "discovery.type=single-node"
-    ports:
-      - 9200:9200
+  fluentbit_instance:
+    image: fluent/fluent-bit:1.0
+ #  ports:
+ #    - "24223:24223"
+    volumes:
+      - "./info_bit:/custom_conf"
+    command: ["/fluent-bit/bin/fluent-bit", "-c", "/custom_conf/in_fluentbit.conf"]
   kibana-instance:
-    image: kibana:7.2.0
+    image: docker.elastic.co/kibana/kibana:7.2.0
     ports:
       - "5601:5601"
-    links:
-      - elasticseacrh-instance
-#   application-instance:
-#       image: alpine
-#       depends_on:
-#         - fluentbit_instance
-#       command: ["echo", "Hello World"]
-#       logging:
-#         driver: fluentd
-#         options:
-#           tag: "docker.{{.ID}}"
-#           fluentd-address: 10.0.75.1:24223
+    environment:
+      ELASTICSEARCH_HOSTS: "http://elasticseacrh-instance:9200"
+#  application-instance:
+#      image: alpine
+#      depends_on:
+#        - fluentbit_instance
+#      command: ["echo", "Hello World"]
+#      logging:
+#        driver: fluentd
+#        options:
+#          tag: "docker.{{.ID}}"
+#          fluentd-address: 10.0.75.1:24223
 #  application-instance:
 #      build: ./log_generating_container
 #      image: log_generating_container
